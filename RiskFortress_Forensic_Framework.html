@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiskFortress — Forensic Business Intelligence Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:     #0D1117;
+    --dark2:    #161B22;
+    --accent:   #E63946;
+    --accent2:  #457B9D;
+    --accent3:  #A8DADC;
+    --light:    #F1FAEE;
+    --gray:     #6C757D;
+    --border:   #DEE2E6;
+    --white:    #ffffff;
+    --yellow:   #FFF3CD;
+    --red-bg:   #FFE5E5;
+    --green-bg: #E8F5E9;
+    --blue-bg:  #E3F2FD;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: #f5f5f0;
+    color: var(--dark);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(230,57,70,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(69,123,157,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-brand {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 16px;
+    max-width: 700px;
+  }
+  .cover-sub {
+    font-size: 18px;
+    color: var(--accent3);
+    margin-bottom: 12px;
+    max-width: 600px;
+  }
+  .cover-tagline {
+    font-size: 15px;
+    color: #adb5bd;
+    max-width: 580px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+  }
+  .cover-divider {
+    width: 60px; height: 2px;
+    background: var(--accent);
+    margin: 32px auto;
+  }
+  .cover-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #6c757d;
+    letter-spacing: 1px;
+  }
+
+  /* ── LAYOUT ── */
+  .document {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--white);
+  }
+
+  .chapter {
+    padding: 60px 64px;
+    border-bottom: 1px solid var(--border);
+    page-break-inside: avoid;
+  }
+
+  .chapter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .chapter-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 34px;
+    color: var(--dark);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px;
+    background: var(--border);
+    margin: 20px 0 28px 0;
+  }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin: 36px 0 12px 0;
+  }
+  .sub-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 20px 0 8px 0;
+  }
+
+  p { margin-bottom: 14px; color: #2d3748; line-height: 1.75; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    padding: 16px 20px 16px 24px;
+    border-left: 4px solid var(--accent2);
+    background: var(--light);
+    margin: 16px 0;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--dark);
+    border-radius: 0 6px 6px 0;
+  }
+  .callout.red   { border-color: var(--accent);  background: var(--red-bg); }
+  .callout.yellow{ border-color: #FFC107;         background: var(--yellow); font-style: normal; }
+  .callout.green { border-color: #28a745;         background: var(--green-bg); }
+  .callout.blue  { border-color: var(--accent2);  background: var(--blue-bg); }
+
+  /* ── TABLES ── */
+  .tbl-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: var(--dark);
+    color: var(--white);
+  }
+  thead th {
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+  tbody tr:nth-child(odd)  { background: var(--white); }
+  tbody tr:nth-child(even) { background: var(--light); }
+  tbody td {
+    padding: 10px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+    color: var(--dark);
+  }
+  .tbl-accent thead tr { background: var(--accent); }
+  .tbl-blue   thead tr { background: var(--accent2); }
+
+  /* ── STEPS ── */
+  .step {
+    display: flex;
+    gap: 24px;
+    margin: 28px 0;
+    padding: 24px;
+    background: var(--light);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    background: var(--dark);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+  }
+  .step-body { flex: 1; }
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  .step-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  ul.step-list { padding-left: 18px; }
+  ul.step-list li {
+    margin-bottom: 7px;
+    color: #2d3748;
+    line-height: 1.65;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--accent2);
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .check-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    letter-spacing: 1px;
+    min-width: 120px;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .check-text { color: var(--dark); font-size: 13px; }
+
+  /* ── TAG PILLS ── */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .tag-dark  { background: var(--dark);    color: var(--white); }
+  .tag-red   { background: var(--accent);  color: var(--white); }
+  .tag-blue  { background: var(--accent2); color: var(--white); }
+
+  /* ── SCORE GRID ── */
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .score-card {
+    background: var(--dark);
+    color: var(--white);
+    padding: 18px 14px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .score-pct {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent3);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .score-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+  }
+  .score-desc {
+    font-size: 10px;
+    color: #adb5bd;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* ── FINAL PAGE ── */
+  .final {
+    background: var(--dark);
+    padding: 100px 60px;
+    text-align: center;
+  }
+  .final h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    color: var(--white);
+    line-height: 1.25;
+    margin: 20px 0 12px 0;
+  }
+  .final p { color: var(--accent3); font-size: 16px; }
+  .final .meta { color: #6c757d; font-size: 11px; margin-top: 40px; }
+
+  /* ── TOC ── */
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+    text-decoration: none;
+    color: var(--dark);
+  }
+  .toc-item:hover { color: var(--accent2); }
+  .toc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-right: 14px;
+    min-width: 60px;
+  }
+  .toc-title { font-weight: 600; flex: 1; }
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted #ccc;
+    margin: 0 12px;
+    height: 1px;
+  }
+
+  @media print {
+    .cover { page-break-after: always; }
+    .chapter { page-break-inside: avoid; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ COVER ══════════════════ -->
+<div class="cover">
+  <div class="cover-brand">RiskFortress · Intelligence Framework · 2026</div>
+  <h1>Forensic Business Intelligence</h1>
+  <div class="cover-divider"></div>
+  <p class="cover-sub">The Complete Research Framework</p>
+  <p class="cover-tagline">How to Find Hidden Loopholes in Any Company —<br>And Turn Them Into Competitive Intelligence</p>
+  <p class="cover-meta">By Kunal Pratap Singh &nbsp;·&nbsp; RiskFortress.in &nbsp;·&nbsp; CONFIDENTIAL</p>
+</div>
+
+<div class="document">
+
+<!-- ══════════════════ TABLE OF CONTENTS ══════════════════ -->
+<div class="chapter">
+  <div class="chapter-label">Contents</div>
+  <div class="chapter-title">What's Inside</div>
+  <div class="chapter-rule"></div>
+  <a class="toc-item" href="#intro">
+    <span class="toc-num">INTRO</span>
+    <span class="toc-title">What Is Forensic Business Intelligence?</span>
+  </a>
+  <a class="toc-item" href="#ch1">
+    <span class="toc-num">CH 01</span>
+    <span class="toc-title">The Forensic Mindset</span>
+  </a>
+  <a class="toc-item" href="#ch2">
+    <span class="toc-num">CH 02</span>
+    <span class="toc-title">Data Sources — Where to Dig</span>
+  </a>
+  <a class="toc-item" href="#ch3">
+    <span class="toc-num">CH 03</span>
+    <span class="toc-title">The Research Process — Step by Step</span>
+  </a>
+  <a class="toc-item" href="#ch4">
+    <span class="toc-num">CH 04</span>
+    <span class="toc-title">Report Structure — The Exact Format</span>
+  </a>
+  <a class="toc-item" href="#ch5">
+    <span class="toc-num">CH 05</span>
+    <span class="toc-title">Competitive Opportunity — Loopholes Into Strategy</span>
+  </a>
+  <a class="toc-item" href="#ch6">
+    <span class="toc-num">CH 06</span>
+    <span class="toc-title">Building Your Brand as a Forensic Analyst</span>
+  </a>
+  <a class="toc-item" href="#checklist">
+    <span class="toc-num">REF</span>
+    <span class="toc-title">The Complete Research Checklist</span>
+  </a>
+</div>
+
+<!-- ══════════════════ INTRO ══════════════════ -->
+<div class="chapter" id="intro">
+  <div class="chapter-label">Introduction</div>
+  <div class="chapter-title">What Is Forensic Business Intelligence?</div>
+  <div class="chapter-rule"></div>
+
+  <p>Most analysts look at what a company <strong>says</strong>. Forensic Business Intelligence is about finding what a company <strong>hides</strong> — not through illegal means, but through the careful, systematic analysis of publicly available data that most people ignore.</p>
+
+  <p>This document is your complete operating manual. It covers every data source, every red flag pattern, every research technique, and the exact format to produce a professional-grade Forensic Intelligence Report — the kind that makes investors, founders, and executives sit up and pay attention.</p>
+
+  <div class="callout">"The goal is not to destroy a company. The goal is to see clearly — and give that clarity to those who can act on it." — RiskFortress Principle</div>
+
+  <div class="section-title">Who This Framework Is For</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Audience</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Founders &amp; CEOs</strong></td><td>Understand competitor vulnerabilities before entering a market</td></tr>
+        <tr><td><strong>Investors &amp; VCs</strong></td><td>Due diligence — find risks before writing a cheque</td></tr>
+        <tr><td><strong>RiskFortress Clients</strong></td><td>Commission a forensic report on a target company</td></tr>
+        <tr><td><strong>Research Analysts</strong></td><td>Build a personal brand through published intelligence work</td></tr>
+        <tr><td><strong>Corporate Strategy Teams</strong></td><td>Identify market gaps created by competitor mistakes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════ CH 1 ══════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="chapter-label">Chapter 01</div>
+  <div class="chapter-title">The Forensic Mindset</div>
+  <div class="chapter-rule"></div>
+
+  <p>Before you open any database or file, you need to think differently. Normal analysts ask: <em>"How is this company performing?"</em> Forensic analysts ask: <em>"What is this company NOT telling me — and why?"</em></p>
+
+  <div class="section-title">The 3 Core Questions</div>
+  <div class="callout blue">1. &nbsp; What does the company <strong>CLAIM</strong> publicly?</div>
+  <div class="callout yellow">2. &nbsp; What does the <strong>DATA</strong> actually show?</div>
+  <div class="callout red">3. &nbsp; What is the <strong>GAP</strong> between claim and data — and who benefits from that gap?</div>
+
+  <div class="section-title">The Peak Company Paradox</div>
+  <p>History shows that companies make their worst strategic mistakes at the height of their success. Peak performance creates overconfidence, blindspots, and resource misallocation. Understanding this paradox is the foundation of your research edge.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Pattern</th><th>What It Means</th><th>Famous Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Overexpansion</strong></td><td>Core product neglected while chasing new markets</td><td>Snapdeal (e-commerce → everything)</td></tr>
+        <tr><td><strong>Founder Distraction</strong></td><td>CEO on magazine covers, not in office</td><td>WeWork — Adam Neumann</td></tr>
+        <tr><td><strong>PR Overdrive</strong></td><td>Announcements without substance</td><td>Byju's — inflated metrics narrative</td></tr>
+        <tr><td><strong>Talent Exodus</strong></td><td>Senior leaders quietly leaving</td><td>Twitter pre-Musk acquisition</td></tr>
+        <tr><td><strong>Luxury Spending</strong></td><td>Lavish offices &amp; events while growth slows</td><td>Kingfisher Airlines</td></tr>
+        <tr><td><strong>Metric Inflation</strong></td><td>Changing KPI definitions to look better</td><td>Paytm — GMV manipulation</td></tr>
+        <tr><td><strong>Acquisition Spree</strong></td><td>Buying companies instead of fixing core product</td><td>Future Group — over-leveraged</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════ CH 2 ══════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="chapter-label">Chapter 02</div>
+  <div class="chapter-title">Data Sources — Where to Dig</div>
+  <div class="chapter-rule"></div>
+
+  <p>This is the most important chapter. Most analysts fail because they only look at obvious sources. Below is every data source categorized by type — many of which 99% of researchers completely ignore.</p>
+
+  <!-- 2.1 -->
+  <div class="section-title">2.1 &nbsp; Government &amp; Regulatory Databases</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:22%">Source</th><th style="width:42%">What to Find</th><th style="width:36%">How to Access</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>MCA21 Portal</strong><br><span style="font-size:11px;color:#457B9D">mca.gov.in</span></td>
+          <td>Director changes, charges on assets, annual returns, paid-up capital, charges satisfied/unsatisfied, registered address changes</td>
+          <td>Free. Search by company name or CIN. Download Form AOC-4, MGT-7.</td>
+        </tr>
+        <tr>
+          <td><strong>SEBI EDGAR</strong><br><span style="font-size:11px;color:#457B9D">sebi.gov.in</span></td>
+          <td>Insider trading disclosures, bulk deals, pledged promoter shares, quarterly shareholding pattern (listed companies only)</td>
+          <td>Free. Filter by company. Watch for promoter pledge % going above 50%.</td>
+        </tr>
+        <tr>
+          <td><strong>DRHP / RHP</strong></td>
+          <td>Risk factors written by the company itself (read carefully!), related party transactions, full litigation history</td>
+          <td>Search by company in SEBI EDGAR. Read Risk Factors section fully — companies write their own risks here.</td>
+        </tr>
+        <tr>
+          <td><strong>RBI Defaulter List</strong></td>
+          <td>Wilful defaulters, NPA status companies, SARFAESI notices issued</td>
+          <td>rbi.org.in — search defaulter list. Cross-reference with MCA data.</td>
+        </tr>
+        <tr>
+          <td><strong>NCLT / NCLAT</strong><br><span style="font-size:11px;color:#457B9D">nclt.gov.in</span></td>
+          <td>Insolvency proceedings, oppression cases, winding up petitions — filed months before news breaks</td>
+          <td>Free search. Many cases appear months before any public knowledge.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout yellow"><strong>PRO TIP — MCA Director Network Analysis:</strong> Go to MCA21. Search the name of any Director. You will see ALL companies they are or were director of. If a director resigned from 3+ companies in 6 months — something is seriously wrong internally. This signal appears months before any news breaks.</div>
+
+  <!-- 2.2 -->
+  <div class="section-title">2.2 &nbsp; Financial Intelligence Sources</div>
+  <p>For listed companies, Screener.in and Tickertape are your best starting tools. For private companies, Tofler and Tracxn give you MCA-sourced financials. Here is what to actually look for:</p>
+
+  <div class="tbl-wrap">
+    <table class="tbl-accent">
+      <thead><tr><th>Metric to Check</th><th>Red Flag Signal</th><th>Tool</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue vs. Cash from Operations</strong></td><td>Revenue growing but operating cash flow negative for 3+ years</td><td>Screener.in / Annual Report</td></tr>
+        <tr><td><strong>Receivables Days (DSO)</strong></td><td>DSO increasing YoY — company booking revenue but not collecting cash</td><td>Screener.in</td></tr>
+        <tr><td><strong>Promoter Pledge %</strong></td><td>Above 50% pledge = founder using shares as loan collateral = financial distress</td><td>BSE / NSE filings</td></tr>
+        <tr><td><strong>Employee Benefit / Revenue</strong></td><td>Suddenly drops — mass layoffs being hidden inside "restructuring" language</td><td>Annual Report Notes</td></tr>
+        <tr><td><strong>Related Party Transactions</strong></td><td>Revenue from group companies — circular or inflated revenue</td><td>Notes to Accounts, DRHP</td></tr>
+        <tr><td><strong>Contingent Liabilities</strong></td><td>Large legal claims disclosed in footnotes — almost always ignored by readers</td><td>Annual Report Footnotes</td></tr>
+        <tr><td><strong>Auditor Change</strong></td><td>Auditor resigned mid-year — the most serious governance red flag possible</td><td>MCA / BSE Announcement</td></tr>
+        <tr><td><strong>Inventory Build-up</strong></td><td>Inventory growing faster than revenue — products are not selling</td><td>Balance Sheet</td></tr>
+        <tr><td><strong>Deferred Revenue Trend</strong></td><td>SaaS companies — if deferred revenue falls, renewals are silently collapsing</td><td>P&amp;L + Balance Sheet</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2.3 -->
+  <div class="section-title">2.3 &nbsp; Human Intelligence (HUMINT) — Digital Signals</div>
+  <p>People leave signals everywhere online. This is the layer most researchers completely miss because it requires manual pattern recognition, not just database queries.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:20%">Signal Source</th><th style="width:45%">What to Track</th><th style="width:35%">Tool / Method</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>LinkedIn Employee Data</strong></td>
+          <td>Volume of senior exits in 90 days. New stealth hires in legal/finance (distress signal). Job postings for roles that already exist (replacing fired employees).</td>
+          <td>LinkedIn Search + Revelio Labs or Thinknum for bulk data</td>
+        </tr>
+        <tr>
+          <td><strong>Glassdoor &amp; Ambitionbox</strong></td>
+          <td>Review sentiment shift over time. Sudden rating drop. Reviews mentioning "salary delays", "chaos", "promises not kept". CEO approval rating trend.</td>
+          <td>Manual scraping or Glassdoor API</td>
+        </tr>
+        <tr>
+          <td><strong>Twitter / X Activity</strong></td>
+          <td>Founder suddenly quiet OR suddenly defensive. Employee complaints going viral. Customer service complaint volume spike.</td>
+          <td>Twitter Advanced Search: "company name + problem"</td>
+        </tr>
+        <tr>
+          <td><strong>Patent &amp; Trademark Filings</strong></td>
+          <td>New filings show investment direction. Abandoned patents show where they gave up. Competitor filing in same space = direct threat signal.</td>
+          <td>IP India (ipindia.gov.in) + Google Patents</td>
+        </tr>
+        <tr>
+          <td><strong>Domain &amp; Tech Stack</strong></td>
+          <td>Hosting downgrade = cost cutting. New domains registered = upcoming launch. Expired domains = abandoned products.</td>
+          <td>Whois + BuiltWith.com + DomainTools</td>
+        </tr>
+        <tr>
+          <td><strong>App Store Reviews</strong></td>
+          <td>Complaints about specific features = product problems. Review velocity drop = user base shrinking. Response time to reviews = team capacity signal.</td>
+          <td>AppFollow or manual scraping</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2.4 -->
+  <div class="section-title">2.4 &nbsp; Media &amp; Court Intelligence</div>
+  <div class="tbl-wrap">
+    <table class="tbl-blue">
+      <thead><tr><th>Source</th><th>What to Find</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Indian Kanoon</strong><br><span style="font-size:11px">indiankanoon.org</span></td><td>All court cases — High Court, Supreme Court, NCDRC, consumer cases. Search company name.</td><td>Free — most powerful free legal database in India</td></tr>
+        <tr><td><strong>Lok Adalat / MSME Samadhan</strong></td><td>Unpaid dues to vendors and MSME suppliers — legally mandated disclosure</td><td>msmesamadhan.gov.in</td></tr>
+        <tr><td><strong>ET / Bloomberg Archive</strong></td><td>Old news with date filter — past controversies companies have buried</td><td>ET search with date filter going back 5+ years</td></tr>
+        <tr><td><strong>Wayback Machine</strong><br><span style="font-size:11px">web.archive.org</span></td><td>Old website content — deleted pages, old leadership claims, changed messaging</td><td>Free — paste any URL to see history</td></tr>
+        <tr><td><strong>Google Alerts</strong></td><td>Set alerts for: company name + "fraud", "layoff", "delay", "complaint", "NCLT"</td><td>Free — real time monitoring, set once and forget</td></tr>
+        <tr><td><strong>Annual Report Archives</strong></td><td>Compare last 5 years — changed risk factors, reworded disclosures, removed segments tell a story</td><td>Company website + BSE filings archive</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════ CH 3 ══════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="chapter-label">Chapter 03</div>
+  <div class="chapter-title">The Research Process — Step by Step</div>
+  <div class="chapter-rule"></div>
+  <p>Now that you know WHERE to look, here is exactly HOW to conduct a forensic investigation from zero to finished report. This is a repeatable process.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 1 · 2 HOURS</div>
+      <div class="step-title">Target Selection &amp; Initial Hypothesis</div>
+      <ul class="step-list">
+        <li>Pick a company that is: (a) publicly visible, (b) recently in news, or (c) in a sector your client cares about.</li>
+        <li>Before starting research, write ONE sentence hypothesis. Example: <em>"Byju's revenue claims do not match their cash burn pattern and talent exits."</em></li>
+        <li>This hypothesis keeps your research focused. You are trying to PROVE or DISPROVE it — not just collect data randomly.</li>
+        <li>Google the company + "controversy", "complaint", "fraud", "layoff" to check for prior public signals.</li>
+        <li>Check MCA immediately — is the company active? Are there any charges or director changes already?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 1–2 · 4–6 HOURS</div>
+      <div class="step-title">Financial Forensics</div>
+      <ul class="step-list">
+        <li>Download last 3–5 Annual Reports. Read the <strong>Notes to Accounts</strong> — NOT the headline numbers on the cover page.</li>
+        <li>Build a simple Excel: Revenue, EBITDA, Cash from Operations, Debt, Receivables — tracked across 5 years.</li>
+        <li>Look for divergence: Revenue going up while cash going down = revenue recognition issue. Always a red flag.</li>
+        <li>Check Related Party Transactions table — who is paying whom within the group? Any circular revenue?</li>
+        <li>Read the Auditor's Report carefully. Any "emphasis of matter" or qualifications? That is a major signal.</li>
+        <li>Compare Contingent Liabilities across years — if it grew 5x in one year, a major legal risk quietly emerged.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 2 · 3 HOURS</div>
+      <div class="step-title">Human Intelligence Sweep</div>
+      <ul class="step-list">
+        <li>LinkedIn: Search company, filter employees by "Past" — how many left in last 6 months? What seniority level?</li>
+        <li>Glassdoor: Read last 50 reviews chronologically. Note if sentiment changed sharply after a specific date.</li>
+        <li>Check the founder and C-suite LinkedIn activity — are they posting less? Speaking defensively? Attending too many events?</li>
+        <li>Search Twitter/X: company name + "not received", "scam", "delay", "where is my" — these are customer distress signals.</li>
+        <li>Check Indian Kanoon for all litigation. Case types matter: consumer cases = product issues. Labour cases = HR crisis.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 3 · 3 HOURS</div>
+      <div class="step-title">Competitive Gap Mapping</div>
+      <ul class="step-list">
+        <li>List the loopholes you have found. For each one, ask: which competitor is positioned to exploit this right now?</li>
+        <li>Research that competitor — do they have the capability to fill this gap? Are they already moving in this direction?</li>
+        <li>This is the intelligence product: <em>Company X has loophole Y. Competitor Z can exploit it by doing A, B, C.</em></li>
+        <li>If writing for Company Z (your client), now you give them a specific action plan with timelines.</li>
+        <li>If publishing publicly, this section is what makes your analysis uniquely valuable — not just diagnosis but strategy.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 3 · 2 HOURS</div>
+      <div class="step-title">Verification &amp; Cross-Check</div>
+      <ul class="step-list">
+        <li>Every claim needs at least <strong>TWO independent sources</strong>. If only one source says something — mark it as unverified.</li>
+        <li>Go back to your original hypothesis. Did the data prove or disprove it? Be honest — the best analysts change their mind.</li>
+        <li>Check if the "loopholes" you found are already known — search for existing analyst reports on the company.</li>
+        <li>Your value is in the <strong>CONNECTION</strong> between data points, not just listing individual facts in isolation.</li>
+        <li>Legal check: Are you using only publicly available information? Are you stating facts vs. opinions clearly?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <div class="step-meta">DAY 4 · 4 HOURS</div>
+      <div class="step-title">Report Writing &amp; Distribution</div>
+      <ul class="step-list">
+        <li>Follow the Report Structure in Chapter 4 of this document exactly.</li>
+        <li>Lead with the most shocking finding — not background. Readers decide in the first paragraph whether to continue.</li>
+        <li>Use your own signature framework name for the analysis method — this builds your brand over time.</li>
+        <li>Publish on LinkedIn first (B2B audience). Then send directly to 10 relevant people: founders, investors, journalists.</li>
+        <li>Tag the companies you analyzed where appropriate — this drives massive organic reach.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CH 4 ══════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="chapter-label">Chapter 04</div>
+  <div class="chapter-title">Report Structure — The Exact Format</div>
+  <div class="chapter-rule"></div>
+
+  <p>A forensic intelligence report is not an essay. It is a structured document that takes the reader from context to conclusion with zero wasted words. Use this exact structure for every report you produce under the RiskFortress brand.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:25%">Section</th><th style="width:55%">Content</th><th style="width:20%">Length</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Executive Summary</strong></td>
+          <td>3–5 sentences. The most important finding stated plainly. What company, what loophole, what risk, what opportunity. This is what gets shared on social media.</td>
+          <td>Half page</td>
+        </tr>
+        <tr>
+          <td><strong>2. Company Overview</strong></td>
+          <td>Brief factual context. Founded when, what they do, current valuation/revenue, recent news. No opinion here. Just facts to orient the reader.</td>
+          <td>Half page</td>
+        </tr>
+        <tr>
+          <td><strong>3. Methodology</strong></td>
+          <td>State your sources and process. "This analysis is based on MCA filings, 3 years of annual reports, 200 Glassdoor reviews, and LinkedIn employee data." This builds credibility immediately.</td>
+          <td>Quarter page</td>
+        </tr>
+        <tr>
+          <td><strong>4. Key Findings</strong></td>
+          <td>The core of the report. 3–5 specific loopholes with evidence. Each finding: what it is, data that proves it, why it matters, when it started. No opinions — only data-backed observations.</td>
+          <td>2–3 pages</td>
+        </tr>
+        <tr>
+          <td><strong>5. Risk Quantification</strong></td>
+          <td>Put a number on each loophole. "If receivables are not collected, ₹400Cr is at risk." Numbers make findings real and shareable.</td>
+          <td>1 page</td>
+        </tr>
+        <tr>
+          <td><strong>6. Competitive Opportunity Map</strong></td>
+          <td>For each loophole — which competitor benefits, and how. Specific and actionable. "Competitor X should target Y's enterprise clients in the next 90 days while Y is distracted with restructuring."</td>
+          <td>1 page</td>
+        </tr>
+        <tr>
+          <td><strong>7. Conclusion &amp; Recommendations</strong></td>
+          <td>What should happen next. If writing for a client — their action plan. If publishing — your prediction. End with a strong, quotable sentence.</td>
+          <td>Half page</td>
+        </tr>
+        <tr>
+          <td><strong>8. Disclaimer</strong></td>
+          <td>"This report is based solely on publicly available information. All opinions are the analyst's own. This is not investment advice."</td>
+          <td>3–4 lines</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════ CH 5 ══════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="chapter-label">Chapter 05</div>
+  <div class="chapter-title">Competitive Opportunity — Loopholes Into Strategy</div>
+  <div class="chapter-rule"></div>
+
+  <p>This chapter is what separates a journalist from a strategist. Journalists expose loopholes. Strategists show who benefits — and exactly how. This is where RiskFortress creates the most value for clients.</p>
+
+  <div class="section-title">The Loophole-to-Opportunity Matrix</div>
+  <div class="tbl-wrap">
+    <table class="tbl-accent">
+      <thead><tr><th style="width:22%">Loophole Type</th><th style="width:35%">What It Signals</th><th style="width:43%">Competitor Action to Recommend</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Key Talent Exiting</strong><br><span style="font-size:11px">(C-suite / Product heads)</span></td>
+          <td>Institutional knowledge leaving. Product roadmap will slow. Customer relationships at risk.</td>
+          <td>Poach those executives immediately. Hire them before competitors do. They carry client relationships and product context.</td>
+        </tr>
+        <tr>
+          <td><strong>Customer Complaints Spiking</strong><br><span style="font-size:11px">(App reviews, Twitter, Consumer Court)</span></td>
+          <td>NPS declining. Churn about to increase. Enterprise clients looking for alternatives.</td>
+          <td>Run targeted ads to that company's unhappy customers. Create migration offer. Reach out directly to their enterprise accounts.</td>
+        </tr>
+        <tr>
+          <td><strong>Funding Gap</strong><br><span style="font-size:11px">(Last round 18+ months ago)</span></td>
+          <td>Company will cut costs, may miss product commitments, may lose key team members.</td>
+          <td>Approach their clients proactively with a stability narrative. "We have 3 years of runway. They don't."</td>
+        </tr>
+        <tr>
+          <td><strong>Regulatory / Legal Issues</strong><br><span style="font-size:11px">(NCLT, SEBI action, consumer forum)</span></td>
+          <td>Management distracted by legal battles. Brand reputation at risk. Clients getting nervous.</td>
+          <td>Reach out to their clients with a risk mitigation pitch. "When your vendor is under legal scrutiny, your data is at risk."</td>
+        </tr>
+        <tr>
+          <td><strong>Geographic Overexpansion</strong><br><span style="font-size:11px">(10 new cities in 12 months)</span></td>
+          <td>Capital being stretched thin. Unit economics in new markets likely negative. Core market being neglected.</td>
+          <td>Dominate the core market they are neglecting. Increase spend where they have reduced presence.</td>
+        </tr>
+        <tr>
+          <td><strong>Product Quality Degradation</strong><br><span style="font-size:11px">(Reviews and support tickets)</span></td>
+          <td>Engineering team stretched or departing. Tech debt accumulating. Enterprise clients will not renew.</td>
+          <td>Launch enterprise-grade reliability campaign. Target renewal cycle of their top clients — 60 days before contract end.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">The 90-Day Exploitation Window</div>
+  <p>Most loopholes have a 90-day window before the company either fixes them or before the market already knows. Your report must always include a time-sensitive recommendation. This is what makes clients act — urgency backed by evidence.</p>
+
+  <div class="callout yellow">
+    <strong>Template sentence for every report:</strong><br><br>
+    "Based on current talent exit velocity and funding timeline, Company X has approximately 60–90 days before their enterprise product quality visibly degrades. Competitor action must begin within 30 days to capture maximum opportunity."
+  </div>
+</div>
+
+<!-- ══════════════════ CH 6 ══════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="chapter-label">Chapter 06</div>
+  <div class="chapter-title">Building Your Brand as a Forensic Analyst</div>
+  <div class="chapter-rule"></div>
+
+  <p>The research is only half the work. The other half is making sure the right people see it. Here is how to build a reputation that makes investors and founders take your calls.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:15%">Phase</th><th style="width:50%">Action</th><th style="width:35%">Outcome</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Phase 1</strong><br><span style="font-size:11px;color:#457B9D">Month 1–3</span></td>
+          <td>Publish 3 forensic case studies on LinkedIn. Pick known Indian companies that recently struggled. Use public data only. Tag relevant investors and founders.</td>
+          <td>Build initial credibility. Get shared by industry accounts. Investors start following you.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 2</strong><br><span style="font-size:11px;color:#457B9D">Month 3–6</span></td>
+          <td>Submit reports to publications: CDM (done ✓), Inc42, YourStory, FinancialExpress. Create a signature analysis framework with your name on it.</td>
+          <td>Third-party validation. Search results show your work. Journalists start quoting you.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 3</strong><br><span style="font-size:11px;color:#457B9D">Month 6–12</span></td>
+          <td>Launch paid intelligence reports via RiskFortress. Price: ₹25,000–₹1,00,000 per report depending on depth and client size. Offer retainer for ongoing competitive intelligence.</td>
+          <td>Revenue stream established. Client list builds. Speaking invitations arrive.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 4</strong><br><span style="font-size:11px;color:#457B9D">Month 12+</span></td>
+          <td>YouTube: "I analyzed [Company X] and found this" format. Podcast appearances. International publications. US/UK market entry begins.</td>
+          <td>Personal brand transcends India. American audience. Premium pricing unlocked.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Your Signature Framework — The RiskFortress Intelligence Score</div>
+  <p>Every great analyst has a named framework. This makes your work quotable and memorable. Here is the suggested scoring framework for RiskFortress:</p>
+
+  <div class="score-grid">
+    <div class="score-card">
+      <span class="score-pct">25%</span>
+      <div class="score-label">Financial Integrity</div>
+      <div class="score-desc">Cash vs. revenue alignment, auditor flags, debt trends</div>
+    </div>
+    <div class="score-card">
+      <span class="score-pct">20%</span>
+      <div class="score-label">Governance Quality</div>
+      <div class="score-desc">Director stability, related party exposure, compliance</div>
+    </div>
+    <div class="score-card">
+      <span class="score-pct">20%</span>
+      <div class="score-label">Talent Stability</div>
+      <div class="score-desc">C-suite tenure, attrition signals, Glassdoor trend</div>
+    </div>
+    <div class="score-card">
+      <span class="score-pct">20%</span>
+      <div class="score-label">Market Execution</div>
+      <div class="score-desc">Expansion discipline, product-market fit, customer satisfaction</div>
+    </div>
+    <div class="score-card">
+      <span class="score-pct">15%</span>
+      <div class="score-label">Competitive Exposure</div>
+      <div class="score-desc">Active competitors exploiting current loopholes</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CHECKLIST ══════════════════ -->
+<div class="chapter" id="checklist">
+  <div class="chapter-label">Quick Reference</div>
+  <div class="chapter-title">The Complete Research Checklist</div>
+  <div class="chapter-rule"></div>
+  <p>Use this checklist for every company you analyze. Print it out or keep it open while researching.</p>
+
+  <div class="sub-title">🎯 Target Setup</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">SETUP</div><div class="check-text">Hypothesis written in one sentence</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">SETUP</div><div class="check-text">Google search: company name + controversy / layoff / fraud</div></div>
+
+  <div class="sub-title">🏛️ Government &amp; Regulatory</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MCA</div><div class="check-text">Company status — active or struck off</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MCA</div><div class="check-text">Director list — any recent resignations</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MCA</div><div class="check-text">Charges on assets — satisfied or unsatisfied</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MCA</div><div class="check-text">Annual returns filed on time (last 3 years)</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">SEBI</div><div class="check-text">Promoter pledge % checked (listed companies)</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">SEBI</div><div class="check-text">Insider trading disclosures reviewed</div></div>
+
+  <div class="sub-title">💰 Financial Forensics</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">Last 3 Annual Reports downloaded</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">Revenue vs. Cash from Operations compared</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">DSO / Receivables trend checked</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">Related Party Transactions reviewed</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">Contingent Liabilities compared year-over-year</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">FINANCIAL</div><div class="check-text">Auditor report qualifications checked</div></div>
+
+  <div class="sub-title">⚖️ Legal Intelligence</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">LEGAL</div><div class="check-text">Indian Kanoon search completed</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">LEGAL</div><div class="check-text">NCLT filings checked</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">LEGAL</div><div class="check-text">MSME Samadhan unpaid dues checked</div></div>
+
+  <div class="sub-title">👥 Human Intelligence</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">HUMINT</div><div class="check-text">LinkedIn: Senior exits in last 90 days counted</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">HUMINT</div><div class="check-text">Glassdoor: Review sentiment shift identified</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">HUMINT</div><div class="check-text">Twitter/X: Customer complaint volume assessed</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">HUMINT</div><div class="check-text">App Store reviews: Trend analyzed</div></div>
+
+  <div class="sub-title">📰 Media Intelligence</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MEDIA</div><div class="check-text">Wayback Machine: Old website vs. current compared</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">MEDIA</div><div class="check-text">ET/Bloomberg archive: Past controversies found</div></div>
+
+  <div class="sub-title">⚔️ Competitive Analysis</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">COMPETITIVE</div><div class="check-text">Loopholes mapped to competitor opportunities</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">COMPETITIVE</div><div class="check-text">90-day exploitation window estimated</div></div>
+
+  <div class="sub-title">📄 Report Quality</div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">REPORT</div><div class="check-text">All claims have minimum 2 independent sources</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">REPORT</div><div class="check-text">Legal disclaimer included</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div class="check-cat">REPORT</div><div class="check-text">Executive Summary written last (after all findings)</div></div>
+</div>
+
+<!-- ══════════════════ FINAL ══════════════════ -->
+<div class="final">
+  <div class="cover-brand">RiskFortress · riskfortress.in</div>
+  <h2>Intelligence Is Not What You Know.<br>It Is What You Notice That Others Don't.</h2>
+  <p>Forensic Business Intelligence · Competitive Strategy · Enterprise Security</p>
+  <p class="meta">By Kunal Pratap Singh &nbsp;·&nbsp; Mayalok Ventures &nbsp;·&nbsp; 2026<br>
+  This document is proprietary. For research, client, and internal use only.</p>
+</div>
+
+</div><!-- /document -->
+</body>
+</html>
